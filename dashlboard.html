@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar IoT Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2 family=Kanit:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-space: #0b0f19;
+            --bg-crater: #161f33;
+            --moon-light: #fef08a;
+            --moon-glow: rgba(254, 240, 138, 0.15);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --led-on: #4ade80;
+            --led-off: #f87171;
+            --sensor-active: #38bdf8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Kanit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-space);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 30px);
+            background-size: 550px 550px, 350px 350px;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1.5rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .moon-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fffde6 0%, var(--moon-light) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--moon-glow);
+            position: relative;
+        }
+
+        .brand h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #ffffff, var(--moon-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .system-status {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--led-on);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: var(--led-on);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--led-on);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-crater);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.75rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(254, 240, 138, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .type-badge {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .pin-badge {
+            font-size: 0.85rem;
+            color: var(--moon-light);
+            background: rgba(254, 240, 138, 0.1);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status-on { color: var(--led-on); text-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
+        .status-off { color: var(--text-secondary); }
+        .status-active { color: var(--sensor-active); text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+
+        .time-stamp {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: right;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 0.75rem;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            header { flex-direction: column; gap: 1rem; align-items: start; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="brand">
+                <div class="moon-icon"></div>
+                <div>
+                    <h1>Lunar IoT Dashboard</h1>
+                    <p id="system-subtitle" style="color: var(--text-secondary); font-size: 0.85rem;">กำลังเชื่อมต่อฐานข้อมูล...</p>
+                </div>
+            </div>
+            <div class="system-status" id="status-indicator">
+                <div class="pulse-dot"></div>
+                <span id="status-text">กำลังโหลด...</span>
+            </div>
+        </header>
+
+        <main class="dashboard-grid" id="dashboard-container">
+            <!-- ข้อมูลจะแสดงตรงนี้ -->
+        </main>
+    </div>
+
+    <script>
+        // 1. ใส่ URL หรือ IP ของบอร์ดคุณที่นี่ (เช่น 'http://192.168.1.50/api/data')
+        const API_URL = 'YOUR_API_ENDPOINT_URL'; 
+
+        // 2. ข้อมูลสำรอง (Fallback) ระบบจะดึงมาใช้ทันทีหาก API จริงของคุณยังไม่เปิดหรือเชื่อมต่อไม่ได้
+        const backupData = {
+            "success": true,
+            "data": [
+                {"id": "1", "device_name": "LED1", "device_type": "LED", "pin": "13", "status": "ON", "created_at": "ระบบจำลองออนไลน์"},
+                {"id": "2", "device_name": "LED2", "device_type": "LED", "pin": "12", "status": "OFF", "created_at": "ระบบจำลองออนไลน์"},
+                {"id": "3", "device_name": "Temperature", "device_type": "SENSOR", "pin": "34", "status": "ACTIVE", "created_at": "ระบบจำลองออนไลน์"},
+                {"id": "4", "device_name": "Humidity", "device_type": "SENSOR", "pin": "35", "status": "ACTIVE", "created_at": "ระบบจำลองออนไลน์"},
+                {"id": "5", "device_name": "Soil Moisture", "device_type": "SENSOR", "pin": "36", "status": "ACTIVE", "created_at": "ระบบจำลองออนไลน์"}
+            ]
+        };
+
+        // ฟังก์ชันอัปเดต UI หน้าจอ
+        function renderDashboard(rawData) {
+            const container = document.getElementById('dashboard-container');
+            
+            // ตรวจสอบโครงสร้างข้อมูล ป้องกัน Error ทะลุเข้าหน้าจอ
+            let devices = [];
+            if (rawData && Array.isArray(rawData)) {
+                devices = rawData;
+            } else if (rawData && rawData.data && Array.isArray(rawData.data)) {
+                devices = rawData.data;
+            } else {
+                console.error("รูปแบบ JSON ไม่ถูกต้อง");
+                return;
+            }
+
+            container.innerHTML = devices.map(device => {
+                let statusClass = 'status-off';
+                if (String(device.status).toUpperCase() === 'ON') statusClass = 'status-on';
+                if (String(device.status).toUpperCase() === 'ACTIVE') statusClass = 'status-active';
+
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 style="font-size: 1.3rem; font-weight:500; margin-bottom:4px;">${device.device_name || 'Unknown'}</h3>
+                                <span class="type-badge">${device.device_type || 'Device'}</span>
+                            </div>
+                            <span class="pin-badge">PIN ${device.pin || '-'}</span>
+                        </div>
+                        <div class="card-body">
+                            <span style="font-size: 0.9rem; color: var(--text-secondary);">สถานะ</span>
+                            <span class="status-value ${statusClass}">${device.status || 'UNKNOWN'}</span>
+                        </div>
+                        <div class="time-stamp">อัปเดต: ${device.created_at || '-'}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ฟังก์ชันดึงข้อมูลจากหลังบ้าน
+        async function fetchIoTData() {
+            const statusText = document.getElementById('status-text');
+            const statusIndicator = document.getElementById('status-indicator');
+            const subtitle = document.getElementById('system-subtitle');
+
+            try {
+                // หากยังไม่ได้แก้ URL ให้กระโดดไปโหมดจำลองทันทีเพื่อไม่ให้ระบบค้าง
+                if (API_URL === 'YOUR_API_ENDPOINT_URL' || API_URL === '') {
+                    throw new Error("ยังไม่ได้กำหนด API URL จริง");
+                }
+
+                const response = await fetch(API_URL, { method: 'GET', timeout: 5000 });
+                if (!response.ok) throw new Error("การเชื่อมต่อเซิร์ฟเวอร์ผิดพลาด");
+                
+                const jsonResult = await response.json();
+                renderDashboard(jsonResult);
+                
+                // แสดงสถานะสีเขียวเมื่อเชื่อมต่อสำเร็จ
+                statusText.innerText = "ระบบออนไลน์ (ดึงข้อมูลจริง)";
+                statusIndicator.style.borderColor = "var(--led-on)";
+                statusIndicator.style.color = "var(--led-on)";
+                subtitle.innerText = "เชื่อมต่อกับอุปกรณ์โดยตรง";
+
+            } catch (error) {
+                // ระบบเซฟตี้ทำงาน: เมื่อเชื่อมต่อจริงไม่ได้ ให้สลับมาใช้ข้อมูลสำรองทันที
+                console.warn("เซฟตี้ทำงาน: " + error.message);
+                renderDashboard(backupData);
+                
+                // แจ้งเตือนสเตตัสสีเหลืองนวล (ธีมดวงจันทร์) ให้รู้ว่าใช้โหมดปลอดภัยอยู่
+                statusText.innerText = "โหมดสำรอง (Safe Mode)";
+                statusIndicator.style.borderColor = "var(--moon-light)";
+                statusIndicator.style.color = "var(--moon-light)";
+                subtitle.innerText = "ใช้ข้อมูลสำรองเนื่องจากไม่พบ API จริง";
+            }
+        }
+
+        // สั่งให้โหลดข้อมูลครั้งแรก และรีเฟรชข้อมูลอัตโนมัติทุกๆ 3 วินาที (3000ms)
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchIoTData();
+            setInterval(fetchIoTData, 3000);
+        });
+    </script>
+</body>
+</html>
